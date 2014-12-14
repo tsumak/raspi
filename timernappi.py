@@ -5,9 +5,10 @@ import RPi.GPIO as GPIO
 import time
 
 debug = 0	# debug variable
+GPIO.setwarnings(False)
+
 
 if debug == 1:
-#	GPIO.setwarnings(False)
 	GPIO.cleanup()
 	
 
@@ -44,18 +45,18 @@ def rele_monta():                # funktio 3x
 		GPIO.output(rele, True)
 		time.sleep(1)
 
-def nappi():
+def nappi(pin):
 	while True:
-		print "nappi painettu (FALLING)"
-		painettu = time.wait()
+		print "nappi painettu (FALLING) - reboot"
+		painettu = time.time()
 		GPIO.wait_for_edge(pin, GPIO_RISING)
-		irroitettu = time.wait()
+		irroitettu = time.time()
 	
 		tulos = irroitettu - painettu
 
 		if tulos <= 2:
 			print "tulos on alle 2"
-		elif tulos > 2:
+		elif tulos > 5:
 			print "tulos on yli 2"
 
 ##debug
@@ -90,6 +91,8 @@ GPIO.add_event_detect(pin, GPIO.FALLING, callback=nappi, bouncetime=300)
 #	print "tulos on: ",
 #	print irroitettu - painettu
 
+while True:
+	time.sleep(1)
 
 GPIO.cleanup()
 
