@@ -1,16 +1,9 @@
-# testi kaksoistoimiselle napille
-# painallus ja pohjassa pito ovat eri toimintoja
+## kaksitoiminen nappi. (paina kerran = boot, pidä pohjassa = shutdown)
 
 import RPi.GPIO as GPIO
-import time
+import time, os
 
-debug = 0	# debug variable
 GPIO.setwarnings(False)
-
-
-if debug == 1:
-	GPIO.cleanup()
-	
 
 # pinout mapping BCM/BOARD
 GPIO.setmode(GPIO.BCM)
@@ -28,23 +21,6 @@ GPIO.output(rele, True)
 
 ## done setting up ---------------------------------------------------
 
-
-# define funktiot
-def rele_kerran():               # funktio 1x
-        GPIO.output(rele, False)
-        time.sleep(1)
-        GPIO.output(rele, True)
-	time.sleep(1)	
-
-def rele_monta():                # funktio 3x
-        for i in range(3):
-
-                GPIO.output(rele, False)
-		time.sleep(1)
-
-		GPIO.output(rele, True)
-		time.sleep(1)
-
 def nappi(pin):
 	GPIO.remove_event_detect(pin)
 	painettu = time.time() ; print "painettu"
@@ -55,45 +31,15 @@ def nappi(pin):
 	tulos = irroitettu - painettu
 	if tulos < 0.5:
 		print "REBOOT"
+		time.sleep(3)
+		os.system(shutdown -r now)
 	elif tulos > 0.5:
 		print "SHUTDOWN"
-
-##debug
-if debug == 1:
-	print "testataan funktio kerran"
-	rele_kerran()
-	print "kerta toimii"
-
-	time.sleep(3)
-	print "entas kolme kertaa.."
-
-	rele_monta()
-	print "montakin toimii"
-
-
-	print "valmis. funktiot ok!"
-	GPIO.cleanup()		
-	exit()
-## eod
+		time.sleep(3)
+		os.system(shutdown -h now)
 
 GPIO.add_event_detect(pin, GPIO.FALLING, callback=nappi, bouncetime=300)
 
-#while True:
-#	
-#	GPIO.wait_for_edge(pin, GPIO.FALLING)
-#	painettu = time.time()
-#
-#	GPIO.wait_for_edge(pin, GPIO.RISING)
-#	irroitettu = time.time()
-#
-#	# debug
-#	print "tulos on: ",
-#	print irroitettu - painettu
-
+# keep script running/waiting for event
 while True:
 	time.sleep(1)
-
-GPIO.cleanup()
-
-
-
