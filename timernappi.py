@@ -47,7 +47,6 @@ def rele_monta():                # funktio 3x
 
 def nappi(pin):
 	GPIO.remove_event_detect(pin)
-	print "nappi painettu - reboot"
 	painettu = time.time() ; print "painettu"
 
 	GPIO.wait_for_edge(pin, GPIO.RISING)
